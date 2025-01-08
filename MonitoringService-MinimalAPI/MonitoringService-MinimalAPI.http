@@ -1,0 +1,6 @@
+@MonitoringService_MinimalAPI_HostAddress = http://localhost:5015
+
+GET {{MonitoringService_MinimalAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
