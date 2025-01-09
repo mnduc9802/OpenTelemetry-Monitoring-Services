@@ -41,10 +41,19 @@ builder.Services.AddOpenTelemetry()
             .AddHttpClientInstrumentation()
             .AddAspNetCoreInstrumentation()
             .AddRuntimeInstrumentation()
+            .AddMeter("APIMetrics") // Phải match với tên trong MetricsRegistry
             .AddOtlpExporter(options =>
             {
-                options.Endpoint = new Uri("http://localhost:4317");
+                options.Endpoint = new Uri("http://otel-collector:4317");
                 options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                options.ExportProcessorType = OpenTelemetry.ExportProcessorType.Batch;
+                options.BatchExportProcessorOptions = new OpenTelemetry.BatchExportProcessorOptions<Activity>
+                {
+                    MaxQueueSize = 2048,
+                    ScheduledDelayMilliseconds = 1000, // Giảm xuống để test nhanh hơn
+                    ExporterTimeoutMilliseconds = 30000,
+                    MaxExportBatchSize = 512,
+                };
             });
     });
 
@@ -73,9 +82,6 @@ app.MapGet("/api/sample", async context =>
 
     await context.Response.WriteAsJsonAsync(response);
 });
-
-
-
 
 // Add telemetry middleware - sẽ bắt mọi request
 app.UseMiddleware<TelemetryMiddleware>();

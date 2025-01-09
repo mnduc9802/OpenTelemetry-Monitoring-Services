@@ -13,28 +13,37 @@ namespace MonitoringService
 
         public MetricsRegistry(string meterName)
         {
-            _meter = new Meter(meterName);
+            // Add version to differentiate metrics
+            _meter = new Meter(meterName, "1.0.0");
+            Console.WriteLine($"Created meter: {meterName} v1.0.0");
 
             RequestCounter = _meter.CreateCounter<long>(
-                "api.requests.total",
-                description: "Total number of API requests"
+                "api_requests_total", // Changed to underscore format
+                description: "Total number of API requests",
+                unit: "{requests}"
             );
+            Console.WriteLine("Created RequestCounter");
 
             RequestDuration = _meter.CreateHistogram<double>(
-                "api.request.duration",
+                "api_request_duration_milliseconds", // Changed name
                 unit: "ms",
                 description: "Duration of API requests"
             );
+            Console.WriteLine("Created RequestDuration");
 
             SuccessCounter = _meter.CreateCounter<long>(
-                "api.requests.success",
-                description: "Number of successful requests"
+                "api_requests_success_total", // Changed name
+                description: "Number of successful requests",
+                unit: "{requests}"
             );
+            Console.WriteLine("Created SuccessCounter");
 
             FailureCounter = _meter.CreateCounter<long>(
-                "api.requests.failure",
-                description: "Number of failed requests"
+                "api_requests_failure_total", // Changed name
+                description: "Number of failed requests",
+                unit: "{requests}"
             );
+            Console.WriteLine("Created FailureCounter");
         }
     }
 }

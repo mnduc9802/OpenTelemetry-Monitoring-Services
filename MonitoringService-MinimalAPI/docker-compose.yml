@@ -1,5 +1,19 @@
 ﻿version: '3.8'
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - monitoring
+    depends_on:
+      - otel-collector
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
